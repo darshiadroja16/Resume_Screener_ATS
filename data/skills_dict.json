@@ -1,0 +1,19 @@
+[
+  "python", "java", "c++", "c", "javascript", "typescript", "sql", "r",
+  "html", "css", "react", "react.js", "angular", "vue.js", "node.js",
+  "express.js", "django", "flask", "fastapi", "spring boot",
+  "machine learning", "deep learning", "natural language processing",
+  "computer vision", "data analysis", "data visualization",
+  "pandas", "numpy", "scikit-learn", "tensorflow", "pytorch", "keras",
+  "spacy", "opencv", "matplotlib", "seaborn", "power bi", "tableau",
+  "mysql", "postgresql", "mongodb", "sqlite", "redis", "firebase",
+  "git", "github", "docker", "kubernetes", "aws", "azure", "gcp",
+  "linux", "rest api", "graphql", "microservices", "ci/cd",
+  "agile", "scrum", "jira", "figma", "streamlit", "excel",
+  "communication", "teamwork", "leadership", "problem solving",
+  "time management", "critical thinking", "project management",
+  "data structures", "algorithms", "oop", "dbms", "operating systems",
+  "computer networks", "system design", "unit testing", "debugging",
+  "web scraping", "api development", "cloud computing", "big data",
+  "hadoop", "spark", "kafka", "nlp", "llm", "generative ai"
+]
