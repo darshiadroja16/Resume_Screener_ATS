@@ -3,7 +3,7 @@ import spacy  # NLP library for text processing
 from spacy.matcher import PhraseMatcher  # finds predefined skills in text 
 
 
-nlp = spacy.load("en_core_web_sm")  # loads english nlp model
+nlp = spacy.load("en_core_web_sm",disable=["parser", "ner", "lemmatizer", "tagger"])  # loads english nlp model
 
 
 def load_skills(skills_path: str = "data/skills_dict.json") -> list[str]:
