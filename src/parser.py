@@ -49,6 +49,9 @@ def extract_text(file_path: str) -> str:
 def extract_text_safe(file_path: str) -> str | None:
     """
     Safely extract text from a resume file, returning None if extraction fails.
+    
+    Args: file_path (str): Path to the resume file.
+    Returns: str | None: Extracted text or None if extraction fails.
     """
     try:
         return extract_text(file_path)
