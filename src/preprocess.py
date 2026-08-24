@@ -10,8 +10,8 @@ def load_skills(skills_path: str = "data/skills_dict.json") -> list[str]:
     """
     Load the list of skills from a JSON file.
 
-    Args: Path to the skills JSON file.
-    Returns: List of skills.
+    Args: skills_path: str: Path to the skills JSON file.
+    Returns: list[str]: List of skills.
     """
 
     with open(skills_path) as f:  # opens the json file
@@ -22,8 +22,8 @@ def build_matcher(skills: list[str]) -> PhraseMatcher:
     """
     Create a PhraseMatcher using the given skills.
 
-    Args:  List of skills.
-    Returns:  PhraseMatcher: Configured matcher for skill extraction.
+    Args: skills: list[str]: List of skills.
+    Returns: PhraseMatcher: Configured matcher for skill extraction.
     """
     matcher = PhraseMatcher(nlp.vocab, attr="LOWER")  # create a case-insensitive phrase matcher
     patterns = [nlp.make_doc(skill) for skill in skills] # converts plain text into a spaCy document.
@@ -36,8 +36,8 @@ def clean_text(text :str) -> str:
     """
     Clean the input text by removing unwanted characters and formatting.
 
-    Args:   Raw resume text.
-    Returns:   Cleaned text.
+    Args: text :str: Raw resume text.
+    Returns: str: Cleaned text.
     """
     doc = nlp(text)  # process the text using spacy
     tokens = [
@@ -56,8 +56,10 @@ def extract_skills(text: str) -> list[str]:
     """
     Extract skills from resume text.
 
-    Args:  Resume text.
-    Returns:  Sorted list of unique skills found.
+    Args:
+        text (str): Resume text.
+    Returns:
+        list[str]: Sorted list of unique skills found.
     """
     doc = nlp(text.lower())
     matches = _matcher(doc)  # finds all the matching skills from json file (skills_dict.json)
