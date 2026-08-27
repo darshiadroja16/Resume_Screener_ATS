@@ -4,17 +4,8 @@ from src.preprocess import extract_skills
 
 def build_dataset_from_csv(csv_path: str, text_column: str, id_column: str) -> pd.DataFrame:
     """
-    Build a structured dataset from a CSV file containing resumes
-
-    Args:
-        - Path to the input CSV file
-        - Col containing resume text in input csv
-        - Col containing unique resume IDs in input csv
-    Returns:
-        DataFrame containing:
-            - id
-            - raw_text
-            - skills
+    Build a structured DataFrame from a CSV file by extracting resume text and skills using
+    the specified text and ID columns.
     """
     df = pd.read_csv(csv_path)
     rows = []  # store processed resumes
@@ -30,9 +21,3 @@ def build_dataset_from_csv(csv_path: str, text_column: str, id_column: str) -> p
         })
 
     return pd.DataFrame(rows) # returns processed resume information into dataframe 
-
-# testing code
-if __name__ == "__main__":
-    dataset = build_dataset_from_csv("data/Resume.csv", text_column="Resume_str", id_column="ID")
-    dataset.to_csv("data/parsed_resumes.csv", index=False)
-    print(f"Saved {len(dataset)} resumes to data/parsed_resumes.csv")
