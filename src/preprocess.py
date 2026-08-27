@@ -7,11 +7,8 @@ nlp = spacy.load("en_core_web_sm",disable=["parser", "ner", "lemmatizer", "tagge
 
 
 def load_skills(skills_path: str = "data/skills_dict.json") -> list[str]:
-    """
-    Load the list of skills from a JSON file.
-
-    Args: skills_path: str: Path to the skills JSON file.
-    Returns: list[str]: List of skills.
+    """ 
+    Load the list of skills from a JSON file using the given file path. 
     """
 
     with open(skills_path) as f:  # opens the json file
@@ -19,11 +16,8 @@ def load_skills(skills_path: str = "data/skills_dict.json") -> list[str]:
 
 
 def build_matcher(skills: list[str]) -> PhraseMatcher:
-    """
-    Create a PhraseMatcher using the given skills.
-
-    Args: skills: list[str]: List of skills.
-    Returns: PhraseMatcher: Configured matcher for skill extraction.
+    """ 
+    Create a case-insensitive PhraseMatcher using the given list of skills. 
     """
     matcher = PhraseMatcher(nlp.vocab, attr="LOWER")  # create a case-insensitive phrase matcher
     patterns = [nlp.make_doc(skill) for skill in skills] # converts plain text into a spaCy document.
@@ -33,11 +27,9 @@ def build_matcher(skills: list[str]) -> PhraseMatcher:
 
 
 def clean_text(text :str) -> str:
-    """
-    Clean the input text by removing unwanted characters and formatting.
-
-    Args: text :str: Raw resume text.
-    Returns: str: Cleaned text.
+    """ 
+    Clean resume text by removing stop words and punctuation and
+    converting words to lowercase lemmas. 
     """
     doc = nlp(text)  # process the text using spacy
     tokens = [
@@ -53,24 +45,12 @@ _matcher = build_matcher(_skills)  # builds the matcher once when the program st
 
 
 def extract_skills(text: str) -> list[str]:
-    """
-    Extract skills from resume text.
-
-    Args:
-        text (str): Resume text.
-    Returns:
-        list[str]: Sorted list of unique skills found.
+    """ 
+    Extract unique skills from resume text using the predefined skill matcher
+    and return them in sorted order. 
     """
     doc = nlp(text.lower())
     matches = _matcher(doc)  # finds all the matching skills from json file (skills_dict.json)
     found = {doc[start:end].text for _, start, end in matches} # store uniquely matched skills
     return sorted(found)  
 
-
-# testing command for terminal :
-#     uv run python -c "
-# from src.parser import extract_text
-# from src.preprocess import extract_skills
-# text = extract_text(r'C:\Users\HP\Desktop\Resume_Screener_ATS\Drashi Adroja AIML  Resume.pdf')
-# print(extract_skills(text))
-# "
