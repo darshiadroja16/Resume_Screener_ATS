@@ -4,10 +4,7 @@ from pathlib import Path   # file extension read
 
 def extract_text_from_pdf(file_path: str) -> str:
     """
-    Extract text from a PDF file.
-
-    Args:   file_path (str): Path to the PDF file.
-    Returns:  str: Extracted text from all pages of the PDF.
+    Extract text from all pages of a PDF file using its file path.
     """
     
     with pdfplumber.open(file_path) as pdf: # open the pdf
@@ -17,10 +14,7 @@ def extract_text_from_pdf(file_path: str) -> str:
 
 def extract_text_from_docx(file_path: str) -> str:
     """
-    Extract text from a Word (.docx) file.
-
-    Args:  file_path (str): Path to the DOCX file.
-    Returns:   str: Extracted text from all paragraphs in the document.
+    Extract text from all para. of a DOCX file using its file path.
     """
     doc = Document(file_path)     # open the docx file 
     return "\n".join(p.text for p in doc.paragraphs)  # convert all para into 1 string 
@@ -28,12 +22,7 @@ def extract_text_from_docx(file_path: str) -> str:
 
 def extract_text(file_path: str) -> str:
     """
-    Function automatically detects the file type
-    and calls the appropriate parser to extract text.
-
-    Args:   file_path (str): Path to the resume file.
-    Returns:  str: Extracted text from the file.
-    Raises:  ValueError: If the file format is not supported.
+    Detect the file type from its extension and extract text using the appropriate parser.
     """
     ext = Path(file_path).suffix.lower()  # get the file extension and convert to lower case 
 
@@ -48,31 +37,11 @@ def extract_text(file_path: str) -> str:
 
 def extract_text_safe(file_path: str) -> str | None:
     """
-    Safely extract text from a resume file, returning None if extraction fails.
-    
-    Args: file_path (str): Path to the resume file.
-    Returns: str | None: Extracted text or None if extraction fails.
+    Safely extract text from a resume file and return None if extraction fails.
     """
     try:
         return extract_text(file_path)
     
     except Exception:
         return None
-
-
-# for testing
-# if __name__ == "__main__":
     
-#     file_path = r"C:\Users\HP\Desktop\Resume_Screener_ATS\Drashi Adroja AIML  Resume.pdf"
-
-#     print(f"Testing file: {file_path}")
-#     print("=" * 60)
- 
-#     text = extract_text_safe(file_path)
-
-#     if text is None:
-#         print("Failed to extract text.")
-#     else:
-#         print("Text extracted successfully!\n")
-#         print(text)
-#         print(f"Total Characters Extracted: {len(text)}")
