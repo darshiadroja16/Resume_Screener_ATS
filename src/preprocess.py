@@ -2,9 +2,11 @@ import json   # read skills form json file
 import spacy  # NLP library for text processing 
 from spacy.matcher import PhraseMatcher  # finds predefined skills in text 
 
-
+nlp_full = spacy.load("en_core_web_sm")  # parser enabled(sirf jd ke liye)
 nlp = spacy.load("en_core_web_sm",disable=["parser", "ner", "lemmatizer", "tagger"])  # loads english nlp model
 
+GENERIC_TERMS = {"experience", "team", "company", "candidate", "role", "years",
+                  "knowledge", "skills", "work", "opportunity", "job", "position"}
 
 def load_skills(skills_path: str = "data/skills_dict.json") -> list[str]:
     """ 
@@ -54,3 +56,28 @@ def extract_skills(text: str) -> list[str]:
     found = {doc[start:end].text for _, start, end in matches} # store uniquely matched skills
     return sorted(found)  
 
+def extract_jd_terms(jd_text: str) -> set[str]:
+    """
+    Pulls out candidate skill/requirement phrases directly from the JD —
+    both known dictionary skills AND noun phrases not yet in the dictionary.
+    """
+    known = set(extract_skills(jd_text))
+    doc = nlp_full(jd_text.lower())
+    candidates = set()
+    for chunk in doc.noun_chunks:
+        phrase = chunk.text.strip()
+        if len(phrase) <= 2:
+            continue
+        if phrase in GENERIC_TERMS:
+            continue
+        candidates.add(phrase)
+ 
+    return known | candidates
+ 
+ 
+def terms_present_in_text(terms: set[str], text: str) -> set[str]:
+    """
+    Direct substring check — doesn't rely on the skills dictionary at all.
+    """
+    text_lower = text.lower()
+    return {term for term in terms if term in text_lower}

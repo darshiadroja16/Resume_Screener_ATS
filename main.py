@@ -30,6 +30,11 @@ async def rank(jd_text: str = Form(...), files: list[UploadFile] = None):
     Receive a job description and uploaded resumes, process and 
     rank the resumes, and return the ranked results as JSON.
     """
+    if not jd_text.strip():
+        return {"error": "JD text is required"}
+    if not files:
+        return {"error": "At least one resume file is required"}
+    
     # create a temporary folder for the uploaded resumes.
     with tempfile.TemporaryDirectory() as tmp_dir:
 

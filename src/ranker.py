@@ -2,7 +2,7 @@ import ast
 import faiss
 import numpy as np
 from sentence_transformers import SentenceTransformer
-from src.preprocess import extract_skills
+from src.preprocess import extract_jd_terms, terms_present_in_text
 
 _model = SentenceTransformer("all-MiniLM-L6-v2")
 
@@ -45,39 +45,41 @@ def rank_by_similarity(jd_text: str, embeddings: np.ndarray, resume_ids: np.ndar
     return results
 
     
-def keyword_score(jd_skills: set, resume_skills: set) -> float:
+def keyword_score(jd_terms: set, matched_terms: set) -> float:
     """
-    Calculate the fraction of job-description skills found in the resume, given the required JD skills
-    and resume skills.
+    Calculate the fraction of job-description terms found in the resume, given the required JD terms
+    and resume text.
     """
-    if not jd_skills:
+    if not jd_terms:
         return 0.0
-    return len(jd_skills & resume_skills) / len(jd_skills)
- 
- 
-def missing_keywords(jd_skills: set, resume_skills: set) -> list[str]:
+    return len(jd_terms & matched_terms) / len(jd_terms)
+
+
+def missing_keywords(jd_terms: set, resume_text: str) -> list[str]:
     """
-    Find and return the sorted list of JD skills that are missing from the resume.
+    Find and return the sorted list of JD terms that are missing from the resume.
     """
-    return sorted(jd_skills - resume_skills) 
+    found_terms = terms_present_in_text(jd_terms, resume_text)
+    return sorted(jd_terms - found_terms)
 
 
 def rank_resumes(jd_text: str, embeddings: np.ndarray, resume_ids: np.ndarray,
-                  id_to_skills: dict, semantic_weight: float = 0.4, top_k: int = 10) -> list[dict]:
+                  id_to_text: dict, semantic_weight: float = 0.4, top_k: int = 10) -> list[dict]:
     """
     Rank resumes by combining semantic similarity and keyword matching and return the
     top-ranked candidates with their scores and missing keywords.
     """
     # get semantic similarity scores for all resumes
     semantic_results = rank_by_similarity(jd_text, embeddings, resume_ids, top_k=len(resume_ids))
-    jd_skills = set(extract_skills(jd_text))
+    jd_terms = extract_jd_terms(jd_text)
  
     final = []
     for r in semantic_results:
         # get skills belonging to the current resume,
-        resume_skills = set(id_to_skills.get(r["id"], []))
+        resume_text = id_to_text.get(r["id"], "")
+        matched = terms_present_in_text(jd_terms, resume_text)
         # get the keyword score of match % of jd skills and resume skills 
-        kw_score = keyword_score(jd_skills, resume_skills)
+        kw_score = keyword_score(jd_terms, matched)
         # combine both scores with resp. weight 
         combined = semantic_weight * r["score"] + (1 - semantic_weight) * kw_score
         final.append({
@@ -85,7 +87,8 @@ def rank_resumes(jd_text: str, embeddings: np.ndarray, resume_ids: np.ndarray,
             "semantic_score": round(r["score"], 3),
             "keyword_score": round(kw_score, 3),
             "final_score": round(combined, 3),
-            "missing_keywords": missing_keywords(jd_skills, resume_skills),
+            "missing_keywords": missing_keywords(jd_terms
+                                                 , resume_text),
         })
     # Sort candidates using their final_score as the sorting key, with reverse=True
     # to arrange them from highest to lowest score.
@@ -101,11 +104,8 @@ def rank_candidates(jd_text: str, embeddings: np.ndarray, resume_ids: np.ndarray
     with their scores and missing keywords.
     """
     # Skills are stored as strings in the CSV or the dataframe , so convert them back to lists.
-    id_to_skills = {
-        row["id"]: ast.literal_eval(row["skills"])
-        for _, row in resumes_df.iterrows()
-    }
-    return rank_resumes(jd_text, embeddings, resume_ids, id_to_skills, semantic_weight, top_k)
+    id_to_text = dict(zip(resumes_df["id"], resumes_df["raw_text"]))
+    return rank_resumes(jd_text, embeddings, resume_ids, id_to_text, semantic_weight, top_k)
  
  
 def rank_uploaded_resumes(jd_text: str, processed: dict, semantic_weight: float = 0.4,
@@ -113,5 +113,5 @@ def rank_uploaded_resumes(jd_text: str, processed: dict, semantic_weight: float 
     """
     Rank newly uploaded resumes using their processed skills and embeddings.
     """
-    id_to_skills = dict(zip(processed["ids"], processed["skills"])) # it zips the processed dict's ids and skills into one dict. 
-    return rank_resumes(jd_text, processed["embeddings"], processed["ids"], id_to_skills, semantic_weight, top_k)
+    id_to_text = dict(zip(processed["ids"], processed["texts"])) # it zips the processed dict's ids and skills into one dict. 
+    return rank_resumes(jd_text, processed["embeddings"], processed["ids"], id_to_text, semantic_weight, top_k)

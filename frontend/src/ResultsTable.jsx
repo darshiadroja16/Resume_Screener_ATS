@@ -1,5 +1,5 @@
-export default function ResultsTable({ results }) {
-  if (!results.length) return null;
+export default function ResultsTable({ results = [] }) {
+  if (!Array.isArray(results) || results.length === 0) return null;
 
   return (
     <table>
