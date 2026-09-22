@@ -28,7 +28,7 @@ The two scores are combined into a final weighted ATS score, and whatever JD ter
 
 ## Project structure
 
-\`\`\`
+```
 resume-screener-ats/
 ├── data/
 │   ├── parsed_resumes.csv       # test dataset (2,484 resumes from Kaggle)
@@ -49,50 +49,50 @@ resume-screener-ats/
 ├── frontend/                    # React app
 ├── main.py                      # FastAPI entrypoint
 └── requirements.txt
-\`\`\`
+```
 
 ## Running it locally
 
 You'll need Python 3.11+, Node.js, and [uv](https://docs.astral.sh/uv/) installed.
 
 **1. Clone the repo**
-\`\`\`bash
+```bash
 git clone https://github.com/darshiadroja16/Resume_Screener_ATS.git
 cd Resume_Screener_ATS
-\`\`\`
+```
 
 **2. Create and activate a virtual environment**
-\`\`\`bash
+```bash
 uv venv
-\`\`\`
+```
 On Windows:
-\`\`\`bash
+```bash
 .venv\Scripts\activate
-\`\`\`
+```
 On Mac/Linux:
-\`\`\`bash
+```bash
 source .venv/bin/activate
-\`\`\`
+```
 
 **3. Install dependencies**
-\`\`\`bash
+```bash
 uv sync
 python -m spacy download en_core_web_sm
-\`\`\`
+```
 
 **4. Start the backend**
-\`\`\`bash
+```bash
 uv run uvicorn main:app --reload
-\`\`\`
-This runs on \`http://localhost:8000\`.
+```
+This runs on `http://localhost:8000`.
 
 **5. Set up and start the frontend** (in a separate terminal)
-\`\`\`bash
+```bash
 cd frontend
 npm install
 npm run dev
-\`\`\`
-This runs on \`http://localhost:5173\` — open that in your browser.
+```
+This runs on `http://localhost:5173` — open that in your browser.
 
 **6. Use it**
 Paste a job description, upload a few resumes (PDF or DOCX), and hit submit. You'll get a ranked list with scores and missing keywords for each one.
